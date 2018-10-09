@@ -57,3 +57,7 @@ vendor/**/.git
 docroot/**/.git
 web/**/.git
 
+#Ignore module checkout directory
+docroot/sites/all/modules/contrib/schema_metatag
+
+
