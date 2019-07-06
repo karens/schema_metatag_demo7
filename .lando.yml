@@ -5,20 +5,26 @@ config:
   xdebug: true
   via: apache
   php: '5.5'
+env_file:
+  - .env
 
 services:
   appserver:
-    run:
-      - "mkdir -p files/private/db"
+    webroot: docroot
+    type: php
   database:
     type: mariadb
 
 events:
+  post-start:
+    - bash /app/scripts/lando/post-start.sh
   post-db-import:
-    - appserver: cd $LANDO_WEBROOT && drush --root=/app/docroot --uri=http://appserver updb -y
-    - appserver: cd $LANDO_WEBROOT && drush --root=/app/docroot --uri=http://appserver cc all -y
+    - appserver: /usr/local/bin/drush updb --root=/app/docroot -y
+    - appserver: /usr/local/bin/drush cc all -y --root=/app/docroot
+    - appserver: /usr/local/bin/drush upwd admin --password=password --root=/app/docroot
+    - appserver: echo "Log in with credentials admin/password"
   pre-test:
-    - appserver: cd $LANDO_WEBROOT && drush --root=/app/docroot --uri=http://appserver en simpletest -y  
+    - appserver: /usr/local/bin/drush --root=/app/docroot --uri=http://appserver en simpletest -y  
 
 tooling:
   test:
